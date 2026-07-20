@@ -536,7 +536,7 @@ export default function App() {
               <span>Book via WhatsApp</span>
             </a>
             <a 
-              href="https://airbnb.com" 
+              href="https://airbnb.com/h/historic-fatih-loft" 
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-2.5 bg-white text-charcoal hover:bg-gray-100 px-8 py-4 rounded-full text-xs font-bold tracking-wider uppercase transition shadow-lg active:scale-95 cursor-pointer"
@@ -545,7 +545,7 @@ export default function App() {
               <span>Find on Airbnb</span>
             </a>
             <a 
-              href="https://booking.com" 
+              href="https://www.booking.com/hotel/tr/4-br-flat-with-terrace-and-hot-tub-in-historic-istanbul.html" 
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-2.5 bg-blue-800 hover:bg-blue-900 text-white px-8 py-4 rounded-full text-xs font-bold tracking-wider uppercase transition shadow-lg active:scale-95 cursor-pointer"
@@ -554,22 +554,6 @@ export default function App() {
             </a>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-left border-t border-white/10 pt-10">
-            <div>
-              <h5 className="text-gold font-bold uppercase tracking-wider text-xs">Residence Location</h5>
-              <p className="text-gray-400 text-xs mt-2 leading-relaxed">
-                Fatih District, Istanbul, Turkey <br />
-                Steps from Yusufpaşa T1 Tram & Yenikapı Metro
-              </p>
-            </div>
-            <div>
-              <h5 className="text-gold font-bold uppercase tracking-wider text-xs">Direct Office Information</h5>
-              <p className="text-gray-400 text-xs mt-2 leading-relaxed">
-                mitatnoyangocmen@gmail.com <br />
-                +90 (531) 298 00 35
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -577,11 +561,13 @@ export default function App() {
       <footer className="py-12 bg-black text-gray-500 text-xs border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <p>© 2026 Luxury Family Residence Istanbul. Built exclusively with premium materials.</p>
+          /*
           <div className="flex space-x-8 uppercase tracking-widest text-[10px] font-semibold">
             <a href="#" className="hover:text-gold transition">Privacy Policy</a>
             <a href="#" className="hover:text-gold transition">House Rules</a>
             <a href="#" className="hover:text-gold transition">Contact Support</a>
           </div>
+          */
         </div>
       </footer>
 
