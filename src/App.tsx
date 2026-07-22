@@ -195,7 +195,7 @@ export default function App() {
             <div className="lg:col-span-5 relative">
               <div className="relative overflow-hidden rounded-3xl shadow-2xl">
                 <img 
-                  src="/images/historic-loft/living-room.jpg" 
+                  src="images/historic-loft/living-room.jpg" 
                   alt="Istanbul Luxe Spacious Living Lounge" 
                   referrerPolicy="no-referrer"
                   className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-700"
