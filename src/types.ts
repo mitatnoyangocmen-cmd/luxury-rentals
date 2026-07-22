@@ -24,7 +24,7 @@ export interface Review {
   country: string;
   date: string;
   avatar: string;
-}
+} /* MNG*/
 
 export interface Amenity {
   name: string;
