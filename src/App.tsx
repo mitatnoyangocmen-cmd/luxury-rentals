@@ -6,7 +6,7 @@ import {
   Calendar, ChevronRight, Clock, Compass, HelpCircle, ShieldCheck 
 } from 'lucide-react';
 
-import InteractiveBooking from './components/InteractiveBooking';
+//import InteractiveBooking from './components/InteractiveBooking';
 import InteractiveGallery from './components/InteractiveGallery';
 import LandmarkTransit from './components/LandmarkTransit';
 import ConciergeChat from './components/ConciergeChat';
@@ -40,8 +40,8 @@ export default function App() {
       }`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <a href="#" className="flex items-baseline space-x-1 group">
-            <span className="text-2xl font-serif font-bold tracking-tight text-charcoal">ISTANBUL</span>
-            <span className="text-2xl font-serif font-light text-gold transition group-hover:brightness-110">LUXE</span>
+            <span className="text-2xl font-serif font-bold tracking-tight text-charcoal">MNG</span>
+            <span className="text-2xl font-serif font-light text-gold transition group-hover:brightness-110">SUITS</span>
           </a>
 
           {/* Desktop Navigation Links */}
@@ -51,7 +51,9 @@ export default function App() {
             <a href="#location" className="hover:text-gold border-b border-transparent hover:border-gold pb-1 transition-all duration-200">Proximity Map</a>
             <a href="#transfer" className="hover:text-gold border-b border-transparent hover:border-gold pb-1 transition-all duration-200">VIP Vito</a>
             <a href="#gallery" className="hover:text-gold border-b border-transparent hover:border-gold pb-1 transition-all duration-200">Gallery</a>
+            {/*
             <a href="#concierge" className="hover:text-gold border-b border-transparent hover:border-gold pb-1 transition-all duration-200">AI Concierge</a>
+            */}
             <a href="#reviews" className="hover:text-gold border-b border-transparent hover:border-gold pb-1 transition-all duration-200">Reviews</a>
           </div>
 
@@ -142,18 +144,7 @@ export default function App() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-col sm:flex-row gap-4 justify-center pt-6"
           >
-            <a 
-              href="#booking" 
-              className="bg-gold text-white hover:brightness-110 px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-md active:scale-95 cursor-pointer"
-            >
-              Book Your Stay
-            </a>
-            <a 
-              href="#concierge" 
-              className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 py-4 rounded-full text-xs font-bold tracking-widest uppercase hover:bg-white hover:text-charcoal transition-all duration-300 active:scale-95 cursor-pointer"
-            >
-              Talk to AI Concierge
-            </a>
+            
           </motion.div>
         </div>
 
@@ -394,51 +385,11 @@ export default function App() {
         </div>
       </section>
 
-      {/* AI Host Assistant Chat & FAQ Section */}
-      <section id="concierge" className="py-28 bg-cream border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            {/* Narrative text block */}
-            <div className="lg:col-span-5 space-y-6">
-              <div>
-                <h2 className="text-gold font-serif italic text-xl mb-2">24/7 Digital Concierge</h2>
-                <div className="h-px w-20 bg-gold mb-6"></div>
-                <h3 className="text-3xl sm:text-4xl font-serif font-medium text-charcoal leading-snug">
-                  Smart Local AI Assistant At Your Service
-                </h3>
-              </div>
-              <p className="text-gray-600 text-sm leading-relaxed font-light">
-                Have specific questions about check-in policies, WiFi speed, local markets, early arrivals, or the best traditional tea spots in the neighborhood?
-              </p>
-              <p className="text-gray-600 text-sm leading-relaxed font-light">
-                Use our digital host chat! It is programmed directly with our apartment rules and historic neighborhood geography to guide you instantly.
-              </p>
 
-              <div className="space-y-3.5 border-t border-gray-200/60 pt-6">
-                <div className="flex items-center space-x-3.5 text-xs text-charcoal font-semibold">
-                  <div className="w-1.5 h-1.5 bg-gold rounded-full mr-1 shrink-0"></div>
-                  <span>Instantly answer operational FAQ queries</span>
-                </div>
-                <div className="flex items-center space-x-3.5 text-xs text-charcoal font-semibold">
-                  <div className="w-1.5 h-1.5 bg-gold rounded-full mr-1 shrink-0"></div>
-                  <span>Discover authentic local landmarks and eateries</span>
-                </div>
-                <div className="flex items-center space-x-3.5 text-xs text-charcoal font-semibold">
-                  <div className="w-1.5 h-1.5 bg-gold rounded-full mr-1 shrink-0"></div>
-                  <span>Completely private and safe secure data proxy</span>
-                </div>
-              </div>
-            </div>
 
-            {/* Chatbox widget (Lg cols 7) */}
-            <div className="lg:col-span-7">
-              <ConciergeChat />
-            </div>
+{/* AI Concierge Chat component placeholder */}
 
-          </div>
-        </div>
-      </section>
+      
 
       {/* Testimonials & Reviews Section */}
       <section id="reviews" className="py-28 bg-white border-b border-gray-100">
@@ -456,21 +407,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Booking Calculator Section */}
-      <section id="booking" className="py-28 bg-cream border-b border-gray-100">
-        <div className="max-w-4xl mx-auto px-6 space-y-12">
-          
-          <div className="text-center space-y-3">
-            <h2 className="text-gold font-serif italic text-xl">Instant Booking Savings</h2>
-            <div className="h-px w-20 bg-gold mx-auto mb-6"></div>
-            <h3 className="text-3xl sm:text-5xl font-serif font-medium text-charcoal">Estimate Your Custom Stay</h3>
-            <p className="text-gray-500 text-sm font-light leading-relaxed max-w-lg mx-auto">Skip standard travel channel fees. Connect with the owner instantly.</p>
-          </div>
-
-          <InteractiveBooking />
-
-        </div>
-      </section>
+{/* Interactive Booking Placeholder */}
 
       {/* Trust & Guest experience Section */}
       <section className="py-28 bg-white border-b border-gray-100">
@@ -561,13 +498,13 @@ export default function App() {
       <footer className="py-12 bg-black text-gray-500 text-xs border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <p>© 2026 Luxury Family Residence Istanbul. Built exclusively with premium materials.</p>
-          /*
+          {/*
           <div className="flex space-x-8 uppercase tracking-widest text-[10px] font-semibold">
             <a href="#" className="hover:text-gold transition">Privacy Policy</a>
             <a href="#" className="hover:text-gold transition">House Rules</a>
             <a href="#" className="hover:text-gold transition">Contact Support</a>
           </div>
-          */
+          */}
         </div>
       </footer>
 
