@@ -195,7 +195,7 @@ export default function App() {
             <div className="lg:col-span-5 relative">
               <div className="relative overflow-hidden rounded-3xl shadow-2xl">
                 <img 
-                  src="public/images/historic-loft/living-room.jpg" 
+                  src="images/historic-loft/living-room.jpg" 
                   alt="Istanbul Luxe Spacious Living Lounge" 
                   referrerPolicy="no-referrer"
                   className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-700"
@@ -351,7 +351,7 @@ export default function App() {
             {/* Side photo with JSX referrerPolicy="no-referrer" */}
             <div className="lg:w-1/2 relative min-h-[300px] lg:min-h-[450px]">
               <img 
-                src="public/images/vip/vip-interior-1.jpeg" 
+                src="images/vip/vip-interior-1.jpeg" 
                 alt="VIP Mercedes-Benz Vito Luxury Lounge Cabin" 
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
