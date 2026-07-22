@@ -40,8 +40,8 @@ export default function App() {
       }`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <a href="#" className="flex items-baseline space-x-1 group">
-            <span className="text-2xl font-serif font-bold tracking-tight text-charcoal">MNG</span>
-            <span className="text-2xl font-serif font-light text-gold transition group-hover:brightness-110">SUITS</span>
+            <span className="text-2xl font-serif font-black tracking-tight text-charcoal">MNG</span>
+            <span className="text-2xl font-serif font-extrabold text-gold transition group-hover:brightness-110">SUITS</span>
           </a>
 
           {/* Desktop Navigation Links */}
@@ -195,7 +195,7 @@ export default function App() {
             <div className="lg:col-span-5 relative">
               <div className="relative overflow-hidden rounded-3xl shadow-2xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1000" 
+                  src="public/images/historic-loft/living-room.jpg" 
                   alt="Istanbul Luxe Spacious Living Lounge" 
                   referrerPolicy="no-referrer"
                   className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-700"
@@ -340,18 +340,10 @@ export default function App() {
 
               <div className="pt-4 flex flex-col sm:flex-row items-baseline gap-4">
                 <a 
-                  href="#booking" 
+                  href="https://wa.me/905312980035" 
                   className="bg-charcoal hover:bg-gold text-white text-xs font-bold px-8 py-3.5 rounded-full transition shadow-md uppercase tracking-wider cursor-pointer"
                 >
-                  Book with Transfer Estimate
-                </a>
-                <a 
-                  href="https://wa.me/905312980035" 
-                  target="_blank"
-                  rel="noopener noreferrer" 
-                  className="text-gold font-bold border-b border-gold hover:text-charcoal transition text-xs"
-                >
-                  Inquire pricing via WhatsApp →
+                  Inquire pricing via WhatsApp
                 </a>
               </div>
             </div>
@@ -359,7 +351,7 @@ export default function App() {
             {/* Side photo with JSX referrerPolicy="no-referrer" */}
             <div className="lg:w-1/2 relative min-h-[300px] lg:min-h-[450px]">
               <img 
-                src="https://images.unsplash.com/photo-1554672408-730436b60dde?auto=format&fit=crop&q=80&w=1200" 
+                src="public/images/vip/vip-interior-1.jpeg" 
                 alt="VIP Mercedes-Benz Vito Luxury Lounge Cabin" 
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
