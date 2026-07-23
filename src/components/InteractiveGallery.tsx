@@ -12,8 +12,8 @@ export default function InteractiveGallery() {
     { value: 'all', label: 'All Photos' },
     { value: 'terrace', label: 'Rooftop Terrace' },
     { value: 'living', label: 'Living Spaces' },
-    { value: 'bedroom', label: 'Bedrooms & Jacuzzi' },
-    { value: 'amenity', label: 'Details & VIP Transfer' }
+    { value: 'bedroom', label: 'Bedrooms & Hot Tub' },
+    { value: 'transit', label: 'VIP Transfer' }
   ] as const;
 
   const filteredItems = GALLERY_ITEMS.filter(item => {

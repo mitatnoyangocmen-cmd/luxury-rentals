@@ -28,7 +28,7 @@ export default function App() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
+  
   return (
     <div className="min-h-screen bg-cream text-charcoal font-sans selection:bg-gold selection:text-white">
       
@@ -40,8 +40,8 @@ export default function App() {
       }`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <a href="#" className="flex items-baseline space-x-1 group">
-            <span className="text-2xl font-serif font-black tracking-tight text-charcoal">MNG</span>
-            <span className="text-2xl font-serif font-extrabold text-gold transition group-hover:brightness-110">SUITS</span>
+            <span className="text-2xl font-serif font-black tracking-tight text-charcoal">FMG</span>
+            <span className="text-2xl font-serif font-extrabold text-gold transition group-hover:brightness-110">LUXURY</span>
           </a>
 
           {/* Desktop Navigation Links */}
@@ -135,7 +135,7 @@ export default function App() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-white/80 text-sm sm:text-lg font-light max-w-3xl mx-auto leading-relaxed"
           >
-            150 m² private oasis • 4 Bedrooms • Sleeps up to 10 guests • Private glass jacuzzi • Panoramic rooftop terrace • VIP Mercedes-Benz Vito Airport transfers
+            150 m² private oasis • 4 Bedrooms • Sleeps up to 10 guests • Private glass hot tub • Panoramic rooftop terrace • VIP Mercedes-Benz Vito Airport transfers
           </motion.p>
 
           <motion.div 
@@ -180,7 +180,7 @@ export default function App() {
                   '4 Fully Air-Conditioned Bedrooms',
                   '100% Private - No Shared Areas',
                   'Contactless Smart Door Entry',
-                  'Private Spa Glass Jacuzzi',
+                  'Private Spa Glass hot tub',
                   'Barista Espresso & Tea Station'
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center space-x-3 text-charcoal/80">
@@ -195,7 +195,7 @@ export default function App() {
             <div className="lg:col-span-5 relative">
               <div className="relative overflow-hidden rounded-3xl shadow-2xl">
                 <img 
-                  src="images/historic-loft/living-room.jpg" 
+                  src="images/historic-loft/livingroom.jpg" 
                   alt="Istanbul Luxe Spacious Living Lounge" 
                   referrerPolicy="no-referrer"
                   className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-700"
