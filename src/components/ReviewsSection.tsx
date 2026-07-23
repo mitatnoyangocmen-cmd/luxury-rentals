@@ -177,7 +177,7 @@ export default function ReviewsSection() {
                     <label className="block text-[10px] uppercase font-bold text-gray-500 mb-2">Your Review Story</label>
                     <textarea
                       required
-                      placeholder="Share your experience (views, clean service, location ease, jacuzzis...)"
+                      placeholder="Share your experience (views, clean service, location ease, hot tubs...)"
                       value={text}
                       rows={4}
                       onChange={e => setText(e.target.value)}

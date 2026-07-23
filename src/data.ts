@@ -6,49 +6,140 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     category: 'terrace',
     title: 'Rooftop Panoramic Terrace',
     description: 'Sip traditional Turkish coffee with a majestic 180° view of Istanbul skyline and the historic peninsula.',
-    imageUrl: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&q=80&w=1200'
+    imageUrl: '/images/historic-loft/terrace.jpg'
   },
   {
-    id: 'living-1',
+    id: 'cinema',
     category: 'living',
     title: 'Grand Living & Cinema Salon',
     description: 'A 150m² light-filled parlor featuring a 4K home cinema projection system, cozy electric fireplace, and hand-woven kilims.',
-    imageUrl: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=1200'
+    imageUrl: '/images/historic-loft/livingroom-cinema.JPG'
   },
-  {
+    {
     id: 'bedroom-1',
     category: 'bedroom',
-    title: 'Orte Master Suite',
-    description: 'A sumptuous master suite dressed in Egyptian cotton linens, featuring a private in-room glass jacuzzi and custom lighting.',
-    imageUrl: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=1200'
+    title: 'Bright and Spacious Double Bedroom',
+    description: 'A luxurious bedroom with a king-size bed, a private air conditioner, make up table,and custom lighting for a restful stay.',
+    imageUrl: '/images/historic-loft/bedroom-1.jpg'
   },
   {
     id: 'bedroom-2',
     category: 'bedroom',
-    title: 'Classic Family Quarters',
-    description: 'Perfect for children or guests, with four hand-crafted wood frame beds, local vintage lamps, and private climate control.',
-    imageUrl: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&q=80&w=1200'
+    title: 'Spacious King Bedroom with a Work Desk',
+    description: 'A bright bedroom with a king-size bed, work station, and a cealing fan for a comfortable stay.',
+    imageUrl: '/images/historic-loft/bedroom-2.JPG'
+  },
+    {
+    id: 'bedroom-3',
+    category: 'bedroom',
+    title: 'Twin Bedroom with Vintage Charm',
+    description: 'A cozy bedroom with two twin beds, a vintage wardrobe, and a cealing fan for a comfortable stay.',
+    imageUrl: '/images/historic-loft/bedroom-3.JPG'
   },
   {
-    id: 'living-2',
+    id: 'bedroom-4',
+    category: 'bedroom',
+    title: 'Rooftop King Bedroom with a View and Hot Tub',
+    description: 'A luxurious bedroom with a king-size bed, a private hot tub, a private air conditioning, and a panoramic view of the city from the rooftop.',
+    imageUrl: '/images/historic-loft/bedroom-4_rooftop.JPG'
+  },
+  {
+    id: 'Kitchen-1',
     category: 'living',
-    title: 'Double Culinary Kitchen',
-    description: 'Equipped with commercial-grade appliances, an Italian espresso machine, and a fully stocked marble spices bar.',
-    imageUrl: 'https://images.unsplash.com/photo-1556912177-c54030639a8a?auto=format&fit=crop&q=80&w=1200'
+    title: 'A Fully Equipped Gourmet Kitchen',
+    description: 'A modern kitchen with a gas stove, oven, refrigerator, and all the necessary utensils for a comfortable stay.',
+    imageUrl: '/images/historic-loft/kitchen-1.png'
+  },
+   {
+    id: 'Kitchen-2',
+    category: 'living',
+    title: 'A Fully Equipped Gourmet Kitchen',
+    description: 'A modern kitchen with a gas stove, oven, refrigerator, and all the necessary utensils for a comfortable stay.',
+    imageUrl: '/images/historic-loft/kitchen-2.jpg'
+  },
+   {
+    id: 'Coffee-Corner',
+    category: 'living',
+    title: 'A Fully Equipped Gourmet Kitchen',
+    description: 'A modern kitchen with a gas stove, oven, refrigerator, and all the necessary utensils for a comfortable stay.',
+    imageUrl: '/images/historic-loft/coffee-corner.png'
   },
   {
     id: 'amenity-1',
-    category: 'amenity',
-    title: 'Private Hot Tub Oasis',
-    description: 'Indulge in a hot soak after a long day of sightseeing, located in our spa-inspired custom ceramic bathroom.',
-    imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=1200'
+    category: 'living',
+    title: 'Laundry & Dryer & Ironing Station',
+    description: 'A private laundry station with a full-size washing machine, dryer, and steam iron for your convenience.',
+    imageUrl: '/images/historic-loft/laundry.JPG'
+  },
+  {
+    id: 'characteristic-1',
+    category: 'living',
+    title: 'Every corner of the apartment is designed with a unique character and charm',
+    description: 'You will have a unique experience in the fireplace corner with a cinema projector and a cozy sofa for a comfortable stay.',
+    imageUrl: '/images/historic-loft/characteristic-1.JPG'
+  },
+  {
+    id: 'characteristic-2',
+    category: 'living',
+    title: 'You will be amazed by the unique character and charm of every corner of the apartment.',
+    description: 'It will be your home away from home welcoming you with every detail designed for your comfort and convenience.',
+    imageUrl: '/images/historic-loft/characteristic-2.jpg'
+  },
+  {
+    id: 'bathroom-1',
+    category: 'living',
+    title: 'A modern bathroom with all the essentials for a comfortable stay.',
+    description: 'From towel to toiletries, ',
+    imageUrl: '/images/historic-loft/bathroom-1.jpg'
+  },
+  {
+    id: 'bathroom-2',
+    category: 'living',
+    title: 'A useful bathroom with everything you need.',
+    description: 'Hygienic and clean, with ear buds, make up remover, and other toiletries for your convenience.',
+    imageUrl: '/images/historic-loft/bathroom-2.jpg'
+  },
+  {
+    id: 'bathroom-3',
+    category: 'living',
+    title: 'Everything you need in a bathroom for a comfortable stay.',
+    description: 'From shampoo to conditioners and body locions, everything you need for a comfortable stay.',
+    imageUrl: '/images/historic-loft/bathroom-3.png'
   },
   {
     id: 'transit-1',
     category: 'transit',
-    title: 'VIP Airport Escort Service',
+    title: '1',
     description: 'Our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks awaits your arrival.',
-    imageUrl: 'https://images.unsplash.com/photo-1554672408-730436b60dde?auto=format&fit=crop&q=80&w=1200'
+    imageUrl: '/images/vip/vip-exterior-1.jpeg'
+  },
+  {
+    id: 'transit-2',
+    category: 'transit',
+    title: '2',
+    description: 'Our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks awaits your arrival.',
+    imageUrl: '/images/vip/vip-interior-2.jpeg'
+  },
+  {
+    id: 'transit-3',
+    category: 'transit',
+    title: '3',
+    description: 'Our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks awaits your arrival.',
+    imageUrl: '/images/vip/vip-interior-3.jpeg'
+  },
+  {
+    id: 'transit-4',
+    category: 'transit',
+    title: '4',
+    description: 'Our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks awaits your arrival.',
+    imageUrl: '/images/vip/vip-interior-4.jpeg'
+  },
+  {
+    id: 'transit-5',
+    category: 'transit',
+    title: '5',
+    description: 'Our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks awaits your arrival.',
+    imageUrl: '/images/vip/vip-interior-5.jpeg'
   }
 ];
 
@@ -123,7 +214,7 @@ export const INITIAL_REVIEWS: Review[] = [
     id: 'rev-3',
     author: 'Elena Moretti',
     rating: 5,
-    text: 'The private jacuzzi and 120-inch home theater projector were the kids absolute highlights. Direct tram T1 station Yusufpaşa is practically next door, making it super easy to explore. The host’s food recommendations were 10/10!',
+    text: 'The private hot tub and 120-inch home theater projector were the kids absolute highlights. Direct tram T1 station Yusufpaşa is practically next door, making it super easy to explore. The host’s food recommendations were 10/10!',
     country: 'Italy 🇮🇹',
     date: 'May 2026',
     avatar: 'EM'
@@ -135,7 +226,7 @@ export const AMENITIES: Amenity[] = [
     name: 'In-Room Hot Tub',
     category: 'relaxation',
     iconName: 'Bath',
-    description: 'Private glass-enclosed deep jacuzzi tub inside the master suite with color-therapy ambient lighting.'
+    description: 'Private glass-enclosed deep hot tub inside the master suite with color-therapy ambient lighting.'
   },
   {
     name: 'Rooftop Panoramic Terrace',
