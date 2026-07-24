@@ -1,406 +1,264 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, Users, Star, Car, Coffee, Sparkles, Send, CheckCircle2, ChevronRight, HelpCircle } from 'lucide-react';
-import { BookingEstimate } from '../types';
+import { Calendar, Users, MessageCircle, CheckCircle2, Info, User, Mail, Phone, PlaneLanding, PlaneTakeoff } from 'lucide-react';
 
-interface AddonItem {
+interface TransferOption {
   id: string;
-  name: string;
-  price: number;
-  type: 'flat' | 'per-night' | 'per-guest-night';
-  icon: React.ReactNode;
+  type: 'from' | 'to';
+  label: string;
+  emoji: string;
   description: string;
 }
 
-const ADDONS_LIST: AddonItem[] = [
-  {
-    id: 'transfer_ist',
-    name: 'VIP Airport Transfer (IST)',
-    price: 60,
-    type: 'flat',
-    icon: <Car className="w-5 h-5" />,
-    description: 'Chauffeured Mercedes-Benz Vito directly from Istanbul Airport.'
-  },
-  {
-    id: 'transfer_saw',
-    name: 'VIP Airport Transfer (SAW)',
-    price: 70,
-    type: 'flat',
-    icon: <Car className="w-5 h-5" />,
-    description: 'Chauffeured Mercedes-Benz Vito directly from Sabiha Gökçen Airport.'
-  },
-  {
-    id: 'breakfast',
-    name: 'Daily Turkish Breakfast',
-    price: 15,
-    type: 'per-guest-night',
-    icon: <Coffee className="w-5 h-5" />,
-    description: 'Traditional organic breakfast basket (olives, honey, local cheeses, pastries) delivered daily.'
-  },
-  {
-    id: 'cleaning',
-    name: 'Daily Refresh Housekeeping',
-    price: 25,
-    type: 'per-night',
-    icon: <Sparkles className="w-5 h-5" />,
-    description: 'Hotel-style daily bed make-up, trash removal, and fresh luxury towels.'
-  }
+const TRANSFER_OPTIONS: TransferOption[] = [
+  { id: 'from_ist', type: 'from', label: 'VIP Transfer From IST', emoji: '🛬', description: 'Airport to the apt, approx 40 mins' },
+  { id: 'from_saw', type: 'from', label: 'VIP Transfer From SAW', emoji: '🛬', description: 'Airport to the apt, approx 55 mins' },
+  { id: 'to_ist', type: 'to', label: 'VIP Transfer To IST', emoji: '🛫', description: 'Apt to Airport, approx 40 mins' },
+  { id: 'to_saw', type: 'to', label: 'VIP Transfer To SAW', emoji: '🛫', description: 'Apt to Airport, approx 55 mins' },
 ];
 
-export default function InteractiveBooking() {
-  const [checkIn, setCheckIn] = useState<string>('');
-  const [checkOut, setCheckOut] = useState<string>('');
-  const [guests, setGuests] = useState<number>(4);
-  const [selectedAddons, setSelectedAddons] = useState<{ [key: string]: boolean }>({});
-  const [fullName, setFullName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [notes, setNotes] = useState<string>('');
+const InteractiveBooking: React.FC = () => {
+  // Guest Info State
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   
-  const [nights, setNights] = useState<number>(3);
-  const [pricing, setPricing] = useState<{
-    baseStay: number;
-    extraGuests: number;
-    addonsTotal: number;
-    grandTotal: number;
-  }>({ baseStay: 540, extraGuests: 0, addonsTotal: 0, grandTotal: 540 });
+  // Booking State
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [guests, setGuests] = useState('1');
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  
+  // Anti-spam Captcha Logic
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
+  const [captchaChallenge, setCaptchaChallenge] = useState({ num1: 0, num2: 0 });
+  const [isHuman, setIsHuman] = useState(false);
 
-  const [inquirySubmitted, setInquirySubmitted] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
-
-  // Pre-fill dates for realistic initial estimates
   useEffect(() => {
-    const today = new Date();
-    const inDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000); // 2 weeks out
-    const outDate = new Date(inDate.getTime() + 4 * 24 * 60 * 60 * 1000); // 4 nights stay
-    
-    setCheckIn(inDate.toISOString().split('T')[0]);
-    setCheckOut(outDate.toISOString().split('T')[0]);
+    setCaptchaChallenge({
+      num1: Math.floor(Math.random() * 9) + 1,
+      num2: Math.floor(Math.random() * 9) + 1
+    });
   }, []);
 
-  // Recalculate price when checkIn, checkOut, guests, or selectedAddons change
-  useEffect(() => {
-    if (!checkIn || !checkOut) return;
+  const handleCaptchaChange = (val: string) => {
+    setCaptchaAnswer(val);
+    setIsHuman(parseInt(val) === captchaChallenge.num1 + captchaChallenge.num2);
+  };
 
-    const inD = new Date(checkIn);
-    const outD = new Date(checkOut);
-    const timeDiff = outD.getTime() - inD.getTime();
-    
-    if (timeDiff <= 0) {
-      setErrorMessage('Departure date must be after check-in date.');
-      setNights(0);
-      return;
-    }
-    
-    setErrorMessage('');
-    const calculatedNights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    setNights(calculatedNights);
-
-    const baseNightlyRate = 180; // Standard night price
-    const freeGuestsCount = 4; // up to 4 guests included in base stay
-    const extraGuestRate = 20; // €20 per extra guest per night
-
-    const baseStayCost = baseNightlyRate * calculatedNights;
-    const extraGuestsCount = Math.max(0, guests - freeGuestsCount);
-    const extraGuestsCost = extraGuestsCount * extraGuestRate * calculatedNights;
-
-    // Calculate addons
-    let addonsCost = 0;
-    ADDONS_LIST.forEach(addon => {
-      if (selectedAddons[addon.id]) {
-        if (addon.type === 'flat') {
-          addonsCost += addon.price;
-        } else if (addon.type === 'per-night') {
-          addonsCost += addon.price * calculatedNights;
-        } else if (addon.type === 'per-guest-night') {
-          addonsCost += addon.price * guests * calculatedNights;
-        }
-      }
-    });
-
-    setPricing({
-      baseStay: baseStayCost,
-      extraGuests: extraGuestsCost,
-      addonsTotal: addonsCost,
-      grandTotal: baseStayCost + extraGuestsCost + addonsCost
-    });
-  }, [checkIn, checkOut, guests, selectedAddons]);
-
-  const handleAddonToggle = (id: string) => {
-    setSelectedAddons(prev => {
-      const updated = { ...prev };
-      // Prevent selecting both IST and SAW transfers
-      if (id === 'transfer_ist' && !prev[id]) {
-        updated['transfer_saw'] = false;
-      } else if (id === 'transfer_saw' && !prev[id]) {
-        updated['transfer_ist'] = false;
-      }
-      updated[id] = !prev[id];
-      return updated;
+  const toggleService = (option: TransferOption) => {
+    setSelectedServices(prev => {
+      const filtered = prev.filter(id => {
+        const item = TRANSFER_OPTIONS.find(o => o.id === id);
+        return item?.type !== option.type;
+      });
+      return prev.includes(option.id) ? prev.filter(id => id !== option.id) : [...filtered, option.id];
     });
   };
 
-  const getWhatsAppLink = () => {
-    const phone = '905300000000'; // Target owner contact placeholder
-    const addonsString = Object.keys(selectedAddons)
-      .filter(k => selectedAddons[k])
-      .map(k => ADDONS_LIST.find(a => a.id === k)?.name)
+  const isFormValid = firstName && lastName && email && phone && startDate && endDate && isHuman;
+
+  const handleBookNow = () => {
+    const selectedLabels = TRANSFER_OPTIONS
+      .filter(opt => selectedServices.includes(opt.id))
+      .map(opt => opt.label)
       .join(', ');
 
-    const message = `Hello Istanbul Luxe! I would like to inquire about booking the Luxury Family Apartment:
-- *Check-in*: ${checkIn}
-- *Check-out*: ${checkOut}
-- *Nights*: ${nights}
-- *Guests*: ${guests}
-${addonsString ? `- *Services Requested*: ${addonsString}\n` : ''}- *Estimated Total*: €${pricing.grandTotal}
-My Name is ${fullName || 'Interested Guest'}. Looking forward to your response!`;
+    const message = `*NEW BOOKING REQUEST*%0A` +
+      `--------------------------%0A` +
+      `👤 *Guest:* ${firstName} ${lastName}%0A` +
+      `📧 *Email:* ${email}%0A` +
+      `📞 *Phone:* ${phone}%0A` +
+      `--------------------------%0A` +
+      `📅 *Dates:* ${startDate} to ${endDate}%0A` +
+      `👥 *Guests:* ${guests}%0A` +
+      `✨ *Services:* ${selectedLabels || 'Standard Stay Only'}%0A%0A` +
+      `Please confirm availability.`;
 
-    return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-  };
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!fullName || !email) {
-      setErrorMessage('Please fill in your name and email address to submit.');
-      return;
-    }
-    setInquirySubmitted(true);
-    setErrorMessage('');
+    window.open(`https://wa.me/905312980035?text=${message}`, '_blank');
   };
 
   return (
-    <div className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-2xl" id="interactive-booking-card">
-      <div className="bg-charcoal text-white p-8 relative">
-        <div className="absolute top-0 right-0 p-4 opacity-10">
-          <Sparkles className="w-24 h-24 text-gold" />
+    <div className="max-w-5xl mx-auto bg-white rounded-[2rem] shadow-2xl border border-gray-100 overflow-hidden font-sans">
+      {/* Top Header */}
+      <div className="bg-[#1A1A1A] px-8 py-6 text-white flex flex-col md:flex-row justify-between items-center border-b border-[#C5A059]/30">
+        <div>
+          <h3 className="text-2xl font-serif text-[#C5A059]">Book Your Luxury Stay</h3>
+          <p className="text-gray-400 text-xs italic">Historic Heart of Istanbul • Premium Amenities</p>
         </div>
-        <span className="text-gold uppercase tracking-widest text-xs font-bold block mb-1">Direct Rates & Savings</span>
-        <h3 className="text-2xl font-serif">Inquire & Calculate Your Stay</h3>
-        <p className="text-gray-400 text-sm mt-2">No service fees. 100% private 150m² home with private check-in.</p>
+        <div className="mt-4 md:mt-0 flex items-center gap-2 bg-[#C5A059]/10 px-4 py-2 rounded-full border border-[#C5A059]/20">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#C5A059]">Direct Booking Active</span>
+        </div>
       </div>
 
-      <div className="p-6 md:p-8 grid md:grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Form Inputs (Lg cols 7) */}
-        <div className="lg:col-span-7 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs uppercase tracking-wider font-semibold text-gray-500 mb-2 flex items-center">
-                <Calendar className="w-3.5 h-3.5 mr-1.5 text-gold" /> Check-In
-              </label>
-              <input
-                type="date"
-                value={checkIn}
-                onChange={e => setCheckIn(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className="w-full bg-cream border border-gray-200 px-4 py-3 rounded-xl focus:border-gold focus:outline-none text-charcoal font-medium text-sm transition"
-              />
+      <div className="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
+        
+        {/* LEFT COLUMN: Booking Parameters */}
+        <div className="flex-1 p-8 bg-gray-50/30">
+          <div className="space-y-6">
+            <h4 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-[#C5A059]" /> 1. Stay Details
+            </h4>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2 ml-1">Check-in</label>
+                <input type="date" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#C5A059]" onChange={(e) => setStartDate(e.target.value)} />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2 ml-1">Check-out</label>
+                <input type="date" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#C5A059]" onChange={(e) => setEndDate(e.target.value)} />
+              </div>
             </div>
-            <div>
-              <label className="block text-xs uppercase tracking-wider font-semibold text-gray-500 mb-2 flex items-center">
-                <Calendar className="w-3.5 h-3.5 mr-1.5 text-gold" /> Check-Out
-              </label>
-              <input
-                type="date"
-                value={checkOut}
-                onChange={e => setCheckOut(e.target.value)}
-                min={checkIn || new Date().toISOString().split('T')[0]}
-                className="w-full bg-cream border border-gray-200 px-4 py-3 rounded-xl focus:border-gold focus:outline-none text-charcoal font-medium text-sm transition"
-              />
-            </div>
-          </div>
 
-          <div>
-            <label className="block text-xs uppercase tracking-wider font-semibold text-gray-500 mb-2 flex items-center justify-between">
-              <span className="flex items-center"><Users className="w-3.5 h-3.5 mr-1.5 text-gold" /> Total Guests</span>
-              <span className="text-gold text-xs font-bold">{guests} of 10 max</span>
-            </label>
-            <div className="flex items-center space-x-4">
-              <button
-                type="button"
-                onClick={() => setGuests(prev => Math.max(1, prev - 1))}
-                className="w-12 h-12 rounded-xl border border-gray-200 flex items-center justify-center font-bold text-gray-600 hover:border-gold hover:text-gold transition active:scale-95 bg-cream"
-              >
-                -
-              </button>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value={guests}
-                onChange={e => setGuests(parseInt(e.target.value))}
-                className="flex-1 h-2 bg-cream rounded-lg appearance-none cursor-pointer accent-gold"
-              />
-              <button
-                type="button"
-                onClick={() => setGuests(prev => Math.min(10, prev + 1))}
-                className="w-12 h-12 rounded-xl border border-gray-200 flex items-center justify-center font-bold text-gray-600 hover:border-gold hover:text-gold transition active:scale-95 bg-cream"
-              >
-                +
-              </button>
+            <div>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2 ml-1">Total Guests</label>
+              <div className="relative">
+                <Users className="absolute left-4 top-3.5 text-gray-400 w-4 h-4" />
+                <select 
+                  value={guests}
+                  onChange={(e) => setGuests(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm outline-none appearance-none focus:border-[#C5A059]"
+                >
+                  {[...Array(10)].map((_, i) => (
+                    <option key={i+1} value={i+1}>{i+1} Guests</option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <p className="text-[11px] text-gray-400 mt-2 italic">
-              * Base rate includes up to 4 guests. Each extra guest is charged €20/night.
-            </p>
-          </div>
 
-          <div>
-            <label className="block text-xs uppercase tracking-wider font-semibold text-gray-500 mb-3 flex items-center">
-              <Sparkles className="w-3.5 h-3.5 mr-1.5 text-gold" /> Exclusive Concierge Services (Optional)
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {ADDONS_LIST.map(addon => {
-                const isSelected = !!selectedAddons[addon.id];
-                return (
+            <div className="space-y-3">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">VIP Services</label>
+              <div className="grid grid-cols-1 gap-2">
+                {TRANSFER_OPTIONS.map((option) => (
                   <button
-                    key={addon.id}
-                    type="button"
-                    onClick={() => handleAddonToggle(addon.id)}
-                    className={`p-4 rounded-xl text-left border flex items-start space-x-3 transition-all duration-300 ${
-                      isSelected
-                        ? 'border-gold bg-cream/60 shadow-inner'
-                        : 'border-gray-100 hover:border-gold/30 hover:bg-gray-50/50'
+                    key={option.id}
+                    onClick={() => toggleService(option)}
+                    className={`flex items-center justify-between p-3 rounded-xl border transition-all duration-300 ${
+                      selectedServices.includes(option.id)
+                        ? 'border-[#C5A059] bg-[#F9F7F2]'
+                        : 'border-gray-100 bg-white hover:border-gray-200 shadow-sm'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg ${isSelected ? 'bg-gold text-white' : 'bg-cream text-gold'} transition-colors`}>
-                      {addon.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-baseline">
-                        <h5 className="font-semibold text-xs text-charcoal truncate">{addon.name}</h5>
-                        <span className="font-serif text-gold text-xs font-bold shrink-0 ml-1">
-                          €{addon.price}
-                          <span className="text-[9px] text-gray-400 font-sans font-normal font-light">
-                            {addon.type === 'flat' ? '' : addon.type === 'per-night' ? '/nt' : '/gst/nt'}
-                          </span>
-                        </span>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-xl">{option.emoji}</span>
+                      <div className="text-left">
+                        <div className="text-[13px] font-bold">{option.label}</div>
+                        <div className="text-[10px] text-gray-500">{option.description}</div>
                       </div>
-                      <p className="text-[10px] text-gray-500 mt-1 line-clamp-2 leading-relaxed">{addon.description}</p>
                     </div>
+                    {selectedServices.includes(option.id) && <CheckCircle2 className="w-4 h-4 text-[#C5A059]" />}
                   </button>
-                );
-              })}
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Pricing Estimator Column (Lg cols 5) */}
-        <div className="lg:col-span-5 bg-cream/50 rounded-2xl p-6 border border-gray-100 flex flex-col justify-between">
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-charcoal mb-4 pb-2 border-b border-gray-200 flex justify-between">
-              <span>Invoice Estimate</span>
-              <span className="text-gold italic font-serif">{nights} Nights</span>
+        {/* RIGHT COLUMN: Guest Information & Submit */}
+        <div className="flex-1 p-8 bg-white">
+          <div className="space-y-6">
+            <h4 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
+              <User className="w-4 h-4 text-[#C5A059]" /> 2. Guest Information
             </h4>
 
-            {errorMessage ? (
-              <div className="p-3 bg-red-50 text-red-600 rounded-lg text-xs font-semibold mb-4 text-center">
-                {errorMessage}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">First Name</label>
+                <input 
+                  placeholder="e.g. John"
+                  className="w-full px-4 py-3 border border-gray-100 bg-gray-50/50 rounded-xl text-sm outline-none focus:bg-white focus:border-[#C5A059]"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
               </div>
-            ) : null}
-
-            <div className="space-y-3.5 text-xs text-gray-600">
-              <div className="flex justify-between">
-                <span>Base Nightly Stay ({nights} × €180)</span>
-                <span className="font-mono text-charcoal font-medium">€{pricing.baseStay}</span>
-              </div>
-              {pricing.extraGuests > 0 && (
-                <div className="flex justify-between">
-                  <span>Additional Guests ({guests - 4} × €20 × {nights} nights)</span>
-                  <span className="font-mono text-charcoal font-medium">€{pricing.extraGuests}</span>
-                </div>
-              )}
-              {pricing.addonsTotal > 0 && (
-                <div className="flex justify-between">
-                  <span>Luxury Add-ons Subtotal</span>
-                  <span className="font-mono text-charcoal font-medium">€{pricing.addonsTotal}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-green-600 font-semibold bg-green-50/50 p-2 rounded-lg">
-                <span>Direct Booking Discount</span>
-                <span>- €0 (Saved fees!)</span>
-              </div>
-
-              <div className="border-t border-gray-200 pt-4 mt-4 flex justify-between items-baseline">
-                <span className="font-bold text-sm text-charcoal uppercase">Grand Total</span>
-                <span className="text-3xl font-serif font-bold text-gold">€{pricing.grandTotal}</span>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Last Name</label>
+                <input 
+                  placeholder="e.g. Doe"
+                  className="w-full px-4 py-3 border border-gray-100 bg-gray-50/50 rounded-xl text-sm outline-none focus:bg-white focus:border-[#C5A059]"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
               </div>
             </div>
-          </div>
 
-          <div className="mt-8 space-y-3">
-            <AnimatePresence mode="wait">
-              {!inquirySubmitted ? (
-                <motion.form
-                  onSubmit={handleFormSubmit}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="space-y-3"
-                >
-                  <input
-                    type="text"
-                    required
-                    placeholder="Your Full Name"
-                    value={fullName}
-                    onChange={e => setFullName(e.target.value)}
-                    className="w-full bg-white border border-gray-200 px-4 py-2.5 rounded-xl focus:border-gold focus:outline-none text-xs"
-                  />
-                  <input
-                    type="email"
-                    required
-                    placeholder="Your Email Address"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    className="w-full bg-white border border-gray-200 px-4 py-2.5 rounded-xl focus:border-gold focus:outline-none text-xs"
-                  />
-                  <textarea
-                    placeholder="Special requests or preferred travel hours..."
-                    value={notes}
-                    rows={2}
-                    onChange={e => setNotes(e.target.value)}
-                    className="w-full bg-white border border-gray-200 px-4 py-2.5 rounded-xl focus:border-gold focus:outline-none text-xs"
-                  />
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-3.5 text-gray-300 w-4 h-4" />
+                <input 
+                  type="email"
+                  placeholder="john@example.com"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-100 bg-gray-50/50 rounded-xl text-sm outline-none focus:bg-white focus:border-[#C5A059]"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
 
-                  <div className="grid grid-cols-2 gap-2 pt-2">
-                    <button
-                      type="submit"
-                      className="w-full bg-charcoal text-white hover:bg-gold-hover px-4 py-3 rounded-full text-xs font-semibold flex items-center justify-center space-x-1.5 transition active:scale-95 shadow-md cursor-pointer"
-                    >
-                      <Send className="w-3.5 h-3.5" />
-                      <span>Request Quote</span>
-                    </button>
-                    <a
-                      href={getWhatsAppLink()}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full bg-green-600 text-white hover:bg-green-700 px-4 py-3 rounded-full text-xs font-semibold flex items-center justify-center space-x-1.5 transition active:scale-95 shadow-md cursor-pointer"
-                    >
-                      <span className="font-bold">Book Instantly</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
-                </motion.form>
-              ) : (
-                <motion.div
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="bg-green-50 border border-green-100 p-4 rounded-xl text-center space-y-2"
-                >
-                  <CheckCircle2 className="w-8 h-8 text-green-500 mx-auto" />
-                  <h5 className="font-semibold text-charcoal text-xs">Inquiry Submitted Successfully!</h5>
-                  <p className="text-[10px] text-gray-500">
-                    Thank you {fullName}. We’ve received your booking request for {checkIn} to {checkOut} ({guests} guests). A personalized offer has been generated and sent to {email}.
-                  </p>
-                  <button
-                    onClick={() => setInquirySubmitted(false)}
-                    className="text-[10px] text-gold underline font-semibold mt-2 focus:outline-none"
-                  >
-                    Edit Request / Add Services
-                  </button>
-                </motion.div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Mobile Number</label>
+              <div className="relative">
+                <Phone className="absolute left-4 top-3.5 text-gray-300 w-4 h-4" />
+                <input 
+                  type="tel"
+                  placeholder="+1 234 567 890"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-100 bg-gray-50/50 rounded-xl text-sm outline-none focus:bg-white focus:border-[#C5A059]"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="p-4 bg-[#F9F7F2] rounded-2xl flex gap-4">
+              <Info className="w-6 h-6 text-[#C5A059] shrink-0" />
+              <p className="text-[10px] text-gray-600 leading-relaxed italic">
+                Our guests traveling in groups find that <span className="text-[#C5A059] font-bold">VIP transfers</span> make their arrival significantly easier. 
+                For bespoke arrangements (flowers, notes), just let us know!
+              </p>
+            </div>
+
+            {/* Captcha and Submit */}
+            <div className="pt-4 border-t border-gray-100 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Verify you are human</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold bg-gray-100 px-3 py-1.5 rounded-lg">{captchaChallenge.num1} + {captchaChallenge.num2} =</span>
+                  <input 
+                    type="number"
+                    className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center outline-none focus:border-[#C5A059]"
+                    value={captchaAnswer}
+                    onChange={(e) => handleCaptchaChange(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <button
+                disabled={!isFormValid}
+                onClick={handleBookNow}
+                className={`w-full py-4 rounded-full font-bold text-white flex items-center justify-center space-x-3 transition-all duration-500 shadow-xl ${
+                  isFormValid 
+                    ? 'bg-[#25D366] hover:bg-[#128C7E] hover:scale-[1.02]' 
+                    : 'bg-gray-300 cursor-not-allowed grayscale'
+                }`}
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span className="tracking-wide">Confirm & Book via WhatsApp</span>
+              </button>
+              
+              {!isFormValid && (
+                <p className="text-[9px] text-center text-red-400 font-medium">
+                  Please complete all fields and security check to unlock booking.
+                </p>
               )}
-            </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default InteractiveBooking;
