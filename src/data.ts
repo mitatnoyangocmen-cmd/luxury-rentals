@@ -26,14 +26,14 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     id: 'bedroom-2',
     category: 'bedroom',
     title: 'Spacious King Bedroom with a Work Desk',
-    description: 'A bright bedroom with a king-size bed, work station, and a cealing fan for a comfortable stay.',
+    description: 'A bright bedroom with a king-size bed, work station, and a ceiling fan for a comfortable stay.',
     imageUrl: '/images/historic-loft/bedroom-2.JPG'
   },
     {
     id: 'bedroom-3',
     category: 'bedroom',
     title: 'Twin Bedroom with Vintage Charm',
-    description: 'A cozy bedroom with two twin beds, a vintage wardrobe, and a cealing fan for a comfortable stay.',
+    description: 'A cozy bedroom with two twin beds, a vintage wardrobe, and a ceiling fan for a comfortable stay.',
     imageUrl: '/images/historic-loft/bedroom-3.JPG'
   },
   {
@@ -109,36 +109,36 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'transit-1',
     category: 'transit',
-    title: '1',
-    description: 'Our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks awaits your arrival.',
+    title: 'Airport transfer with our luxurious Mercedes-Benz Vito',
+    description: 'You will be picked from the airport by our professional driver and brought to the apartment in our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks.',
     imageUrl: '/images/vip/vip-exterior-1.jpeg'
   },
   {
     id: 'transit-2',
     category: 'transit',
-    title: '2',
-    description: 'Our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks awaits your arrival.',
+    title: 'A comfortable and luxurious ride awaits you',
+    description: 'You don\'t need to worry about public transportation or taxis, as our cars are designed for your comfort and convenience.',
     imageUrl: '/images/vip/vip-interior-2.jpeg'
   },
   {
     id: 'transit-3',
     category: 'transit',
-    title: '3',
-    description: 'Our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks awaits your arrival.',
+    title: 'We can set the car for your private events',
+    description: 'Whether it\'s a wedding, a birthday, or a corporate event, we can set the car for your private events with flowers, colors,customized starry sky ceiling, sound system, and soft drinks.',
     imageUrl: '/images/vip/vip-interior-3.jpeg'
   },
   {
     id: 'transit-4',
     category: 'transit',
-    title: '4',
-    description: 'Our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks awaits your arrival.',
+    title: 'Watch TV or listen to music while you enjoy the ride',
+    description: 'Don\'t worry about the traffic, as our cars are equipped with TV and sound system for your entertainment while you enjoy the ride.',
     imageUrl: '/images/vip/vip-interior-4.jpeg'
   },
   {
     id: 'transit-5',
     category: 'transit',
-    title: '5',
-    description: 'Our luxurious Mercedes-Benz Vito with customized starry sky ceiling, sound system, and soft drinks awaits your arrival.',
+    title: 'Full privacy for your group or family',
+    description: 'Our cars are designed for your privacy and comfort, with tinted windows and a partition between the driver and the passengers.',
     imageUrl: '/images/vip/vip-interior-5.jpeg'
   }
 ];
