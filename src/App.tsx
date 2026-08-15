@@ -59,13 +59,13 @@ export default function App() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <a href="#" className="flex items-baseline space-x-1 group">
-            <span className="text-2xl font-serif font-black tracking-tight text-charcoal">
-              FMG
-            </span>
-            <span className="text-2xl font-serif font-extrabold text-gold transition group-hover:brightness-110">
-              LUXURY
-            </span>
+          <a href="#" className="flex items-center group">
+            <img
+            src="/images/logos/FMG-Homes_Logo-V3.png"
+            alt="Istanbul Panoramic Rooftop Terrace View"
+            referrerPolicy="no-referrer"
+            className="w-24 md:w-36 h-auto object-contain opacity-100"
+            />
           </a>
 
           {/* Desktop Navigation Links */}
@@ -302,7 +302,7 @@ export default function App() {
             <div className="lg:col-span-5 relative">
               <div className="relative overflow-hidden rounded-3xl shadow-2xl">
                 <img
-                  src="images/historic-loft/livingroom.jpg"
+                  src="/images/historic-loft/livingroom.jpg"
                   alt="Istanbul Luxe Spacious Living Lounge"
                   referrerPolicy="no-referrer"
                   className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-700"
