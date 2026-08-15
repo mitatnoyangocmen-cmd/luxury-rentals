@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Users, MessageCircle, CheckCircle2, Info, User, Mail, Phone, PlaneLanding, PlaneTakeoff } from 'lucide-react';
+import { Calendar, Users, MessageCircle, CheckCircle2, Info, User, Mail, Phone, AlertCircle, Loader2 } from 'lucide-react';
 
 interface TransferOption {
   id: string;
@@ -16,30 +16,122 @@ const TRANSFER_OPTIONS: TransferOption[] = [
   { id: 'to_saw', type: 'to', label: 'VIP Transfer To SAW', emoji: '🛫', description: 'Apt to Airport, approx 55 mins' },
 ];
 
+const ICAL_URLS = [
+  "https://www.vrbo.com/icalendar/7bd7ed3ccfdf4af6a02077ca42590e9e.ics?nonTentative",
+  "https://ical.booking.com/v1/export?t=141ee329-00b8-4043-9851-b91fb5635640",
+  "https://www.airbnb.com.tr/calendar/ical/1665364785885022959.ics?t=50b2f4fbf16e44c4a1f0413b0bc814e3"
+];
+
 const InteractiveBooking: React.FC = () => {
-  // Guest Info State
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  
-  // Booking State
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [guests, setGuests] = useState('1');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  
-  // Anti-spam Captcha Logic
+  const [bookedDates, setBookedDates] = useState<string[]>([]);
+  const [isLoadingDates, setIsLoadingDates] = useState(true);
+  const [dateError, setDateError] = useState('');
+
   const [captchaAnswer, setCaptchaAnswer] = useState('');
   const [captchaChallenge, setCaptchaChallenge] = useState({ num1: 0, num2: 0 });
   const [isHuman, setIsHuman] = useState(false);
+
+  // Today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     setCaptchaChallenge({
       num1: Math.floor(Math.random() * 9) + 1,
       num2: Math.floor(Math.random() * 9) + 1
     });
+    fetchCalendars();
   }, []);
+
+  const fetchCalendars = async () => {
+    
+      setIsLoadingDates(true);
+      const allBusyDates: string[] = [];
+      console.log(ICAL_URLS);
+      for (const url of ICAL_URLS) {
+
+        try{
+        console.log("Fetching:", url);
+
+        // Using AllOrigins proxy to bypass CORS
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+        console.log(data);
+        console.log(data.contents);
+        const icsText = data.contents;
+
+        // Simple Regex to find date ranges in ICS
+        const eventRegex = /DTSTART;?VALUE=DATE:(\d{8})[\s\S]*?DTEND;?VALUE=DATE:(\d{8})/g;
+        let match;
+        while ((match = eventRegex.exec(icsText)) !== null) {
+          allBusyDates.push(...getDatesInRange(match[1], match[2]));
+        }
+      }
+      catch (error) {
+        console.error("Error fetching calendar:", error);
+      }
+      setBookedDates([...new Set(allBusyDates)]); // Remove duplicates
+      }
+    
+  };
+
+  // Helper: Convert ICS date (20240725) to YYYY-MM-DD and get all days in between
+  const getDatesInRange = (startStr: string, endStr: string) => {
+    const dates = [];
+    const start = new Date(startStr.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+    const end = new Date(endStr.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+    
+    let current = new Date(start);
+    while (current < end) {
+      dates.push(current.toISOString().split('T')[0]);
+      current.setDate(current.getDate() + 1);
+    }
+    return dates;
+  };
+
+  const checkDateAvailability = (checkIn: string, checkOut: string) => {
+    if (!checkIn || !checkOut) return true;
+    const start = new Date(checkIn);
+    const end = new Date(checkOut);
+    
+    let current = new Date(start);
+    while (current < end) {
+      if (bookedDates.includes(current.toISOString().split('T')[0])) {
+        return false;
+      }
+      current.setDate(current.getDate() + 1);
+    }
+    return true;
+  };
+
+  const handleStartDateChange = (val: string) => {
+    setDateError('');
+    if (bookedDates.includes(val)) {
+      setDateError('Selected check-in date is already booked.');
+      setStartDate('');
+      console.log(bookedDates);
+      return;
+    }
+    setStartDate(val);
+  };
+
+  const handleEndDateChange = (val: string) => {
+    setDateError('');
+    if (!checkDateAvailability(startDate, val)) {
+      setDateError('Your selected range includes already booked dates.');
+      setEndDate('');
+      return;
+    }
+    setEndDate(val);
+  };
 
   const handleCaptchaChange = (val: string) => {
     setCaptchaAnswer(val);
@@ -56,7 +148,7 @@ const InteractiveBooking: React.FC = () => {
     });
   };
 
-  const isFormValid = firstName && lastName && email && phone && startDate && endDate && isHuman;
+  const isFormValid = firstName && lastName && email && phone && startDate && endDate && isHuman && !dateError;
 
   const handleBookNow = () => {
     const selectedLabels = TRANSFER_OPTIONS
@@ -73,28 +165,33 @@ const InteractiveBooking: React.FC = () => {
       `📅 *Dates:* ${startDate} to ${endDate}%0A` +
       `👥 *Guests:* ${guests}%0A` +
       `✨ *Services:* ${selectedLabels || 'Standard Stay Only'}%0A%0A` +
-      `Please confirm availability.`;
+      `I checked availability and these dates seem open. Please confirm!`;
 
     window.open(`https://wa.me/905312980035?text=${message}`, '_blank');
   };
 
   return (
     <div className="max-w-5xl mx-auto bg-white rounded-[2rem] shadow-2xl border border-gray-100 overflow-hidden font-sans">
-      {/* Top Header */}
       <div className="bg-[#1A1A1A] px-8 py-6 text-white flex flex-col md:flex-row justify-between items-center border-b border-[#C5A059]/30">
         <div>
           <h3 className="text-2xl font-serif text-[#C5A059]">Book Your Luxury Stay</h3>
-          <p className="text-gray-400 text-xs italic">Historic Heart of Istanbul • Premium Amenities</p>
+          <p className="text-gray-400 text-xs italic">Live Calendar Sync Active</p>
         </div>
-        <div className="mt-4 md:mt-0 flex items-center gap-2 bg-[#C5A059]/10 px-4 py-2 rounded-full border border-[#C5A059]/20">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-[11px] font-bold uppercase tracking-widest text-[#C5A059]">Direct Booking Active</span>
+        <div className="mt-4 md:mt-0 flex items-center gap-3">
+          {isLoadingDates ? (
+            <div className="flex items-center gap-2 text-xs text-gray-400">
+              <Loader2 className="w-3 h-3 animate-spin" /> Syncing Calendars...
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 bg-[#C5A059]/10 px-4 py-2 rounded-full border border-[#C5A059]/20">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#C5A059]">Direct Booking Active</span>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
-        
-        {/* LEFT COLUMN: Booking Parameters */}
         <div className="flex-1 p-8 bg-gray-50/30">
           <div className="space-y-6">
             <h4 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
@@ -102,15 +199,34 @@ const InteractiveBooking: React.FC = () => {
             </h4>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="relative">
                 <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2 ml-1">Check-in</label>
-                <input type="date" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#C5A059]" onChange={(e) => setStartDate(e.target.value)} />
+                <input 
+                  type="date" 
+                  min={today}
+                  value={startDate}
+                  className={`w-full px-4 py-3 bg-white border ${dateError ? 'border-red-400' : 'border-gray-200'} rounded-xl text-sm outline-none focus:border-[#C5A059]`} 
+                  onChange={(e) => handleStartDateChange(e.target.value)} 
+                />
               </div>
-              <div>
+              <div className="relative">
                 <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2 ml-1">Check-out</label>
-                <input type="date" className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#C5A059]" onChange={(e) => setEndDate(e.target.value)} />
+                <input 
+                  type="date" 
+                  min={startDate || today}
+                  value={endDate}
+                  className={`w-full px-4 py-3 bg-white border ${dateError ? 'border-red-400' : 'border-gray-200'} rounded-xl text-sm outline-none focus:border-[#C5A059]`} 
+                  onChange={(e) => handleEndDateChange(e.target.value)} 
+                />
               </div>
             </div>
+
+            {dateError && (
+              <div className="flex items-center gap-2 text-red-500 text-xs bg-red-50 p-3 rounded-lg animate-pulse">
+                <AlertCircle className="w-4 h-4" />
+                <span>{dateError}</span>
+              </div>
+            )}
 
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2 ml-1">Total Guests</label>
@@ -156,7 +272,6 @@ const InteractiveBooking: React.FC = () => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Guest Information & Submit */}
         <div className="flex-1 p-8 bg-white">
           <div className="space-y-6">
             <h4 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
@@ -215,15 +330,13 @@ const InteractiveBooking: React.FC = () => {
             <div className="p-4 bg-[#F9F7F2] rounded-2xl flex gap-4">
               <Info className="w-6 h-6 text-[#C5A059] shrink-0" />
               <p className="text-[10px] text-gray-600 leading-relaxed italic">
-                Our guests traveling in groups find that <span className="text-[#C5A059] font-bold">VIP transfers</span> make their arrival significantly easier. 
-                For bespoke arrangements (flowers, notes), just let us know!
+                Group travelers often find <span className="text-[#C5A059] font-bold">VIP transfers</span> more cost-effective and comfortable than public transport.
               </p>
             </div>
 
-            {/* Captcha and Submit */}
             <div className="pt-4 border-t border-gray-100 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Verify you are human</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Verify identity</span>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold bg-gray-100 px-3 py-1.5 rounded-lg">{captchaChallenge.num1} + {captchaChallenge.num2} =</span>
                   <input 
@@ -241,18 +354,12 @@ const InteractiveBooking: React.FC = () => {
                 className={`w-full py-4 rounded-full font-bold text-white flex items-center justify-center space-x-3 transition-all duration-500 shadow-xl ${
                   isFormValid 
                     ? 'bg-[#25D366] hover:bg-[#128C7E] hover:scale-[1.02]' 
-                    : 'bg-gray-300 cursor-not-allowed grayscale'
+                    : 'bg-gray-300 cursor-not-allowed grayscale opacity-60'
                 }`}
               >
                 <MessageCircle className="w-5 h-5" />
-                <span className="tracking-wide">Confirm & Book via WhatsApp</span>
+                <span className="tracking-wide">{isLoadingDates ? 'Syncing...' : 'Confirm & Book via WhatsApp'}</span>
               </button>
-              
-              {!isFormValid && (
-                <p className="text-[9px] text-center text-red-400 font-medium">
-                  Please complete all fields and security check to unlock booking.
-                </p>
-              )}
             </div>
           </div>
         </div>
