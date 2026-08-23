@@ -273,11 +273,33 @@ export default function ReviewsSection() {
                     </div>
                     <div>
                       <h5 className="font-semibold text-xs text-charcoal">{rev.author}</h5>
+                      
                       <div className="flex items-center text-[10px] text-gray-400 mt-0.5 space-x-2">
-                        <span>{rev.country}</span>
-                        <span>•</span>
-                        <span>{rev.date}</span>
-                      </div>
+  <span>{rev.country}</span>
+
+  {rev.date && (
+    <>
+      <span>•</span>
+      <span>{rev.date}</span>
+    </>
+  )}
+
+  <span>•</span>
+
+  <div className="flex items-center gap-1.5">
+    <img
+      src={
+        rev.platform === 'Airbnb'
+          ? '/images/logos/airbnb.svg'
+          : '/images/logos/booking.svg'
+      }
+      alt={rev.platform}
+      className="w-3.5 h-3.5 object-contain"
+    />
+    <span className="font-medium">{rev.platform}</span>
+  </div>
+</div>
+                      
                     </div>
                   </div>
                 </motion.div>

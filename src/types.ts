@@ -1,3 +1,5 @@
+export type ReviewPlatform = 'Airbnb' | 'Booking.com';
+
 export interface GalleryItem {
   id: string;
   category: 'all' | 'terrace' | 'living' | 'bedroom' | 'amenity' | 'transit';
@@ -22,8 +24,9 @@ export interface Review {
   rating: number;
   text: string;
   country: string;
-  date: string;
+  date?: string;
   avatar: string;
+  platform: ReviewPlatform;
 } /* MNG*/
 
 export interface Amenity {
