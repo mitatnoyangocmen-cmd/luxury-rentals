@@ -5,7 +5,7 @@ import { GALLERY_ITEMS } from '../data';
 import { GalleryItem } from '../types';
 
 export default function InteractiveGallery() {
-  const [activeFilter, setActiveFilter] = useState<'all' | 'terrace' | 'living' | 'bedroom' | 'amenity'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'terrace' | 'living' | 'bedroom' | 'amenity' | 'transit'>('all');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const filterOptions = [

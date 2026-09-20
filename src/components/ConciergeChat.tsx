@@ -11,7 +11,7 @@ interface Message {
 
 const LOCAL_RESPONSES: { [key: string]: string } = {
   wifi: "The high-speed Wi-Fi network is named 'IstanbulLuxe_HighSpeed_5G'. The password is 'historic_peninsula_2026'. It is symmetric 200 Mbps fiber, suitable for work and 4K cinema streaming.",
-  hot tub: "The glass hot tub is private, inside the master suite. Ensure the drain is fully sealed, fill with warm water using the gold fixtures, and turn on the bubble jets via the remote. Turn on the LED therapy lights for maximum relaxation!",
+  "hot tub": "The glass hot tub is private, inside the master suite. Ensure the drain is fully sealed, fill with warm water using the gold fixtures, and turn on the bubble jets via the remote. Turn on the LED therapy lights for maximum relaxation!",
   supermarket: "There is a well-stocked 'Şok Supermarket' just a 1-minute walk from our doorstep (turn left on the main road), and a premium 'CarrefourSA' a 3-minute walk away. Both are open from 9:00 AM to 10:00 PM daily.",
   baklava: "For the absolute best local Baklava experience, take the T1 Tram 3 stops to Karaköy and visit 'Karaköy Güllüoğlu'—the world's most legendary Baklava parlor since 1843. Try the pistachio cold baklava with Turkish tea!",
   luggage: "Absolutely! You can securely drop off your luggage at the apartment starting at 10:30 AM while our professional crew prepares the rooms. Simply notify us via WhatsApp 24 hours in advance."
@@ -54,7 +54,7 @@ export default function ConciergeChat() {
     if (lowerText.includes('wi-fi') || lowerText.includes('wifi') || lowerText.includes('password')) {
       localReply = LOCAL_RESPONSES.wifi;
     } else if (lowerText.includes('hot tub') || lowerText.includes('hot tub') || lowerText.includes('spa')) {
-      localReply = LOCAL_RESPONSES.hot tub;
+      localReply = LOCAL_RESPONSES["hot tub"];
     } else if (lowerText.includes('supermarket') || lowerText.includes('grocery') || lowerText.includes('shop')) {
       localReply = LOCAL_RESPONSES.supermarket;
     } else if (lowerText.includes('baklava') || lowerText.includes('sweet') || lowerText.includes('dessert') || lowerText.includes('restaurant')) {

@@ -24,13 +24,12 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-//import InteractiveBooking from './components/InteractiveBooking';
 import InteractiveGallery from "./components/InteractiveGallery";
 import LandmarkTransit from "./components/LandmarkTransit";
 import ConciergeChat from "./components/ConciergeChat";
 import ReviewsSection from "./components/ReviewsSection";
 import { AMENITIES } from "./data";
-import InteractiveBooking from "./components/InteractiveBooking";
+import VIPTransferBooking from "./components/VIPTransferBooking";
 
 export default function App() {
   const [navScrolled, setNavScrolled] = useState<boolean>(false);
@@ -113,10 +112,13 @@ export default function App() {
 
           <div className="flex items-center space-x-4">
             <a
-              href="#booking"
+              href="#platform-booking"
               className="bg-gold text-white hover:brightness-110 px-8 py-3 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-300 shadow-sm hover:shadow-gold/10 active:scale-95 cursor-pointer"
             >
               Book Your Stay
+            </a>
+            <a href="#vip-transfer-booking" className="hidden sm:inline-flex border border-gold bg-white/90 text-charcoal hover:bg-gold hover:text-white px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-300">
+              Book VIP Transfer
             </a>
             {/* Mobile menu trigger */}
             <button
@@ -240,8 +242,11 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center pt-6"
-          ></motion.div>
+            className="flex flex-col gap-3 items-center justify-center pt-6"
+          >
+            <a href="#platform-booking" className="rounded-full bg-gold px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-white transition hover:brightness-110">Book Your Stay</a>
+            <a href="#vip-transfer-booking" className="rounded-full border border-white/50 bg-white/10 px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur transition hover:bg-white hover:text-charcoal">Book VIP Transfer</a>
+          </motion.div>
         </div>
 
         {/* Scroll down indicator */}
@@ -615,30 +620,29 @@ export default function App() {
       </section>
 
 {/* --- SECTION: DIRECT BOOKING & SAVINGS --- */}
-      <section id="booking" className="py-24 bg-[#F9F7F2] border-t border-gray-100">
+      <section id="vip-transfer-booking" className="py-24 bg-[#F9F7F2] border-t border-gray-100 scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-[#C5A059] font-serif italic text-2xl" data-aos="fade-up">
-              Instant Booking Savings
+              Private Airport Service
             </h2>
             <h3 className="text-4xl md:text-6xl font-serif text-[#1A1A1A]" data-aos="fade-up" data-aos-delay="100">
-              Estimate Your Custom Stay
+              Your arrival, thoughtfully arranged
             </h3>
             <p className="text-gray-500 text-base font-light max-w-xl mx-auto" data-aos="fade-up" data-aos-delay="200">
-              Skip standard travel channel fees. Connect with the host directly to unlock VIP airport transfer bundles.
+              Choose your route, luggage and journey details for a clear VIP transfer quote.
             </p>
             <div className="h-px w-24 bg-[#C5A059]/30 mx-auto mt-6"></div>
           </div>
 
-          {/* Enine genişlettiğimiz yeni InteractiveBooking bileşeni */}
           <div data-aos="zoom-in" data-aos-duration="1000">
-            <InteractiveBooking />
+            <VIPTransferBooking />
           </div>
         </div>
       </section>
 
       {/* --- SECTION: TRUSTED PLATFORMS --- */}
-      <section className="py-24 bg-[#1A1A1A] text-white relative overflow-hidden">
+      <section id="platform-booking" className="py-24 bg-[#1A1A1A] text-white relative overflow-hidden scroll-mt-20">
         {/* Dekoratif Compass/Pusula İkonu */}
         <div className="absolute -bottom-20 -right-20 opacity-5 pointer-events-none">
           <Compass className="w-[500px] h-[500px] text-[#C5A059]" />
