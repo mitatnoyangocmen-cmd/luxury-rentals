@@ -3,67 +3,106 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
-import { createSign } from "crypto";
-import { calculateTransfer, HandLuggagePreference, JourneyType, TransferLocation } from "./src/lib/transfer";
+import { calculateTransfer, isValidRoute, JourneyType, TransferLocation } from "./src/lib/transfer";
 
 dotenv.config();
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   app.use(express.json());
 
   type Reservation = {
     name: string; email: string; phone: string; pickup: TransferLocation; dropoff: TransferLocation;
-    journeyType: JourneyType; date: string; time: string; returnDate?: string; returnTime?: string;
+    journeyType: JourneyType;
+    returnPickup?: TransferLocation; returnDropoff?: TransferLocation;
     flightNumber?: string; passengers: number; largeLuggage: number; cabinLuggage: number;
-    handLuggagePreference: HandLuggagePreference; notes?: string;
+    notes?: string; turnstileToken?: string;
   };
-  const b64 = (value: string | Buffer) => Buffer.from(value).toString("base64url");
-  async function googleToken() {
-    const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-    const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, "\n");
-    if (!email || !privateKey) throw new Error("Google Drive is not configured on the server.");
-    const now = Math.floor(Date.now() / 1000);
-    const unsigned = `${b64(JSON.stringify({ alg: "RS256", typ: "JWT" }))}.${b64(JSON.stringify({ iss: email, scope: "https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive", aud: "https://oauth2.googleapis.com/token", iat: now, exp: now + 3600 }))}`;
-    const signature = createSign("RSA-SHA256").update(unsigned).sign(privateKey, "base64url");
-    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: `${unsigned}.${signature}` }) });
-    if (!tokenResponse.ok) throw new Error("Google authentication failed.");
-    return (await tokenResponse.json() as { access_token: string }).access_token;
+  const locationName: Record<TransferLocation, string> = {
+    ist: "Istanbul Airport (IST)",
+    saw: "Sabiha Gökçen Airport (SAW)",
+    home: "FMG Homes",
+  };
+  const escapeHtml = (value: string) => value.replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character]!));
+  const emailValue = (value: string) => `<span style="color:#1a1a1a;font-weight:600">${escapeHtml(value)}</span>`;
+  function formatIstanbulTime(date: Date) {
+    const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Istanbul", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(date);
+    const value = (type: Intl.DateTimeFormatPartTypes) => parts.find(part => part.type === type)?.value ?? "";
+    return `${value("day")} ${value("month")} ${value("year")}, ${value("hour")}:${value("minute")} (Istanbul Time)`;
   }
-  function reservationText(item: Reservation, total: number, vehicle: string, route: string) {
-    return `VIP TRANSFER RESERVATION\n\nBooking Date/Time: ${new Date().toISOString()}\nGuest Name: ${item.name}\nEmail: ${item.email}\nWhatsApp / Phone: ${item.phone}\n\nJourney Type: ${item.journeyType === "round-trip" ? "Round Trip" : "One Way"}\nPickup: ${item.pickup}\nDrop-off: ${item.dropoff}\nReturn Pickup: ${item.journeyType === "round-trip" ? item.dropoff : "—"}\nReturn Drop-off: ${item.journeyType === "round-trip" ? item.pickup : "—"}\nRoute: ${route}\n\nTransfer Date: ${item.date}\nTransfer Time: ${item.time}\nReturn Date: ${item.returnDate || "—"}\nReturn Time: ${item.returnTime || "—"}\n\nPassengers: ${item.passengers}\nLarge Luggage: ${item.largeLuggage}\nCabin Luggage: ${item.cabinLuggage}\nHand Luggage Preference: ${item.handLuggagePreference}\n\nVehicle: ${vehicle}\nPrice: €${total}\n\nFlight Number: ${item.flightNumber || "—"}\nAdditional Notes: ${item.notes || "—"}`;
+  function reservationEmail(item: Reservation, total: number, vehicle: string) {
+    const inquiryTime = formatIstanbulTime(new Date());
+    const journeyType = item.journeyType === "round-trip" ? "ROUND TRIP" : "ONE WAY";
+    const outboundRoute = `${locationName[item.pickup]} → ${locationName[item.dropoff]}`;
+    const returnRoute = item.journeyType === "round-trip" && item.returnPickup && item.returnDropoff
+      ? `${locationName[item.returnPickup]} → ${locationName[item.returnDropoff]}`
+      : undefined;
+    const flightNumber = item.flightNumber?.trim();
+    const notes = item.notes?.trim();
+    const text = [
+      "VIP TRANSFER INQUIRY",
+      "",
+      `Inquiry Date/Time: ${inquiryTime}`,
+      "",
+      "GUEST DETAILS",
+      `Guest Name: ${item.name}`,
+      `Email: ${item.email}`,
+      `WhatsApp / Phone: ${item.phone}`,
+      "",
+      "JOURNEY",
+      `Journey Type: ${journeyType}`,
+      `Route: ${outboundRoute}`,
+      ...(returnRoute ? [`Return Route: ${returnRoute}`] : []),
+      "",
+      "TRANSFER DETAILS",
+      `Vehicle: ${vehicle}`,
+      `Price: €${total}`,
+      `Passengers: ${item.passengers}`,
+      `Large Luggage: ${item.largeLuggage}`,
+      `Cabin Luggage: ${item.cabinLuggage}`,
+      "",
+      "ADDITIONAL INFORMATION",
+      ...(flightNumber ? [`Flight Number: ${flightNumber}`] : []),
+      ...(notes ? ["", "Additional Notes:", notes] : []),
+    ].join("\n");
+    const row = (label: string, value: string) => `<tr><td style="padding:6px 16px 6px 0;color:#6b7280;vertical-align:top">${escapeHtml(label)}</td><td style="padding:6px 0;vertical-align:top">${emailValue(value)}</td></tr>`;
+    const section = (title: string, rows: string) => `<h2 style="margin:28px 0 8px;padding-top:20px;border-top:1px solid #e5e7eb;color:#c5a059;font-family:Arial,sans-serif;font-size:12px;letter-spacing:1.6px;text-transform:uppercase">${title}</h2><table role="presentation" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;line-height:1.5;width:100%">${rows}</table>`;
+    const html = `<div style="margin:0 auto;max-width:640px;background:#ffffff;color:#1a1a1a;font-family:Arial,sans-serif;padding:32px 24px"><h1 style="margin:0;color:#1a1a1a;font-family:Georgia,serif;font-size:28px;font-weight:normal">VIP Transfer Inquiry</h1><p style="margin:8px 0 0;color:#6b7280;font-size:14px">${escapeHtml(inquiryTime)}</p>${section("Guest Details", row("Guest Name", item.name) + row("Email", item.email) + row("WhatsApp / Phone", item.phone))}${section("Journey", row("Journey Type", journeyType) + row("Route", outboundRoute) + (returnRoute ? row("Return Route", returnRoute) : ""))}${section("Transfer Details", row("Vehicle", vehicle) + row("Price", `€${total}`) + row("Passengers", String(item.passengers)) + row("Large Luggage", String(item.largeLuggage)) + row("Cabin Luggage", String(item.cabinLuggage)))}${section("Additional Information", flightNumber ? row("Flight Number", flightNumber) : "")}${notes ? `<div style="margin-top:28px;padding-top:20px;border-top:1px solid #e5e7eb"><p style="margin:0 0 8px;color:#c5a059;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1.6px;text-transform:uppercase">Additional Notes</p><div style="color:#1a1a1a;font-family:Arial,sans-serif;font-size:14px;line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap">${escapeHtml(notes)}</div></div>` : ""}</div>`;
+    return { text, html };
   }
-  async function createGoogleDocument(title: string, content: string) {
-    const token = await googleToken(); const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
-    const documentResponse = await fetch("https://docs.googleapis.com/v1/documents", { method: "POST", headers, body: JSON.stringify({ title }) });
-    if (!documentResponse.ok) throw new Error("Google Doc could not be created.");
-    const document = await documentResponse.json() as { documentId: string };
-    const insertResponse = await fetch(`https://docs.googleapis.com/v1/documents/${document.documentId}:batchUpdate`, { method: "POST", headers, body: JSON.stringify({ requests: [{ insertText: { location: { index: 1 }, text: content } }] }) });
-    const folder = process.env.GOOGLE_DRIVE_FOLDER_ID;
-    const moveResponse = folder && await fetch(`https://www.googleapis.com/drive/v3/files/${document.documentId}?addParents=${encodeURIComponent(folder)}&removeParents=root`, { method: "PATCH", headers });
-    if (!insertResponse.ok || (moveResponse && !moveResponse.ok)) throw new Error("Google Doc could not be saved to Drive.");
+  async function verifyTurnstile(token: string | undefined, remoteIp: string | undefined) {
+    const secret = process.env.TURNSTILE_SECRET_KEY;
+    if (!secret) throw new Error("Turnstile is not configured.");
+    if (!token) return false;
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ secret, response: token, ...(remoteIp ? { remoteip: remoteIp } : {}) }),
+    });
+    if (!response.ok) return false;
+    return (await response.json() as { success?: boolean }).success === true;
   }
-  async function sendEmail(subject: string, text: string) {
+  async function sendEmail(subject: string, text: string, html: string) {
     if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) throw new Error("Email delivery is not configured on the server.");
-    const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: process.env.RESEND_FROM_EMAIL, to: ["mitatnoyangocmen@gmail.com"], subject, text, html: `<pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${text.replace(/[&<>]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[char]!))}</pre>` }) });
+    const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: process.env.RESEND_FROM_EMAIL, to: ["mitatnoyangocmen@gmail.com"], subject, text, html }) });
     if (!response.ok) throw new Error("Reservation email could not be sent.");
   }
   app.post("/api/vip-transfer-reservations", async (req, res) => {
     try {
       const item = req.body as Reservation;
-      if (!item.name || !/^\S+@\S+\.\S+$/.test(item.email) || !item.phone || !item.date || !item.time) return res.status(400).json({ message: "Please complete the required contact and transfer details." });
-      if (item.pickup === item.dropoff) return res.status(400).json({ message: "Pick up and drop off must be different." });
-      if (item.journeyType === "round-trip" && (!item.returnDate || !item.returnTime)) return res.status(400).json({ message: "Return date and time are required." });
-      if ((item.pickup !== "fatih" || item.dropoff !== "fatih") && !item.flightNumber) return res.status(400).json({ message: "Flight number is required for airport transfers." });
+      if (!item.name || !/^\S+@\S+\.\S+$/.test(item.email) || !item.phone || !item.flightNumber) return res.status(400).json({ message: "Please complete the required contact and flight details." });
+      if (!await verifyTurnstile(item.turnstileToken, req.ip)) return res.status(400).json({ message: "Verification couldn't be completed. Please try again.", code: "turnstile_failed" });
+      if (!isValidRoute(item.pickup, item.dropoff)) return res.status(400).json({ message: "Please select a valid airport and FMG Homes route." });
+      if (item.journeyType === "round-trip" && !isValidRoute(item.returnPickup ?? "", item.returnDropoff ?? "")) return res.status(400).json({ message: "Please complete a valid return transfer route." });
       const pricing = calculateTransfer(item); const vehicle = pricing.vehicle === "vito" ? "Mercedes Vito" : "Mercedes Sprinter";
-      const route = `${item.pickup} → ${pricing.isViaFatih ? "fatih → " : ""}${item.dropoff}`;
-      const text = reservationText(item, pricing.totalPrice, vehicle, route);
-      await Promise.all([createGoogleDocument(`VIP Transfer Reservation - ${item.name} - ${item.date}`, text), sendEmail(`New VIP Transfer Reservation - ${item.name} - ${item.date}`, text)]);
+      const email = reservationEmail(item, pricing.totalPrice, vehicle);
+      await sendEmail(`New VIP Transfer Request – ${item.name}`, email.text, email.html);
+      const text = email.text;
       const whatsappUrl = `https://wa.me/905312980035?text=${encodeURIComponent(text)}`;
       res.status(201).json({ message: "Your VIP transfer request has been submitted.", whatsappUrl });
-    } catch (error) { console.error("VIP transfer reservation failed:", error); res.status(503).json({ message: error instanceof Error ? error.message : "Reservation delivery failed. Please try again." }); }
+    } catch (error) { console.error("VIP transfer reservation failed:", error); res.status(503).json({ message: "We couldn't submit your transfer request. Please try again or contact us." }); }
   });
 
   // API Route for our AI Concierge

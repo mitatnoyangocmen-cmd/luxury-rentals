@@ -25,7 +25,6 @@ import {
 } from "lucide-react";
 
 import InteractiveGallery from "./components/InteractiveGallery";
-import LandmarkTransit from "./components/LandmarkTransit";
 import ConciergeChat from "./components/ConciergeChat";
 import ReviewsSection from "./components/ReviewsSection";
 import { AMENITIES } from "./data";
@@ -51,24 +50,24 @@ export default function App() {
     <div className="min-h-screen bg-cream text-charcoal font-sans selection:bg-gold selection:text-white">
       {/* Premium Sticky Navigation */}
       <nav
-        className={`fixed w-full z-50 transition-all duration-300 border-b ${
+        className={`fixed inset-x-0 top-0 z-50 h-20 md:h-24 transition-all duration-300 border-b ${
           navScrolled
-            ? "py-3.5 glass-nav border-gold/15 shadow-md"
-            : "py-5 bg-transparent border-transparent"
+            ? "glass-nav border-gold/15 shadow-md"
+            : "bg-transparent border-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <a href="#" className="flex items-center group">
+        <div className="max-w-7xl mx-auto grid h-full w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-4 min-[1180px]:gap-5 min-[1180px]:px-6">
+          <a href="#" className="flex shrink-0 items-center group">
             <img
             src="/images/logos/FMG-Homes_Logo-V3.png"
             alt="Istanbul Panoramic Rooftop Terrace View"
             referrerPolicy="no-referrer"
-            className="w-24 md:w-36 h-auto object-contain opacity-100"
+            className="w-16 sm:w-20 min-[1180px]:w-28 h-auto object-contain opacity-100"
             />
           </a>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center space-x-10 text-[11px] font-bold uppercase tracking-[0.2em] text-gray-600">
+          <div className={`hidden min-[920px]:flex min-w-0 items-center justify-center gap-3 whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.1em] min-[1180px]:gap-6 min-[1180px]:text-[11px] min-[1180px]:tracking-[0.2em] ${navScrolled ? "text-gray-600" : "text-white/85"}`}>
             <a
               href="#why-us"
               className="hover:text-gold border-b border-transparent hover:border-gold pb-1 transition-all duration-200"
@@ -80,18 +79,6 @@ export default function App() {
               className="hover:text-gold border-b border-transparent hover:border-gold pb-1 transition-all duration-200"
             >
               Amenities
-            </a>
-            <a
-              href="#location"
-              className="hover:text-gold border-b border-transparent hover:border-gold pb-1 transition-all duration-200"
-            >
-              Proximity Map
-            </a>
-            <a
-              href="#transfer"
-              className="hover:text-gold border-b border-transparent hover:border-gold pb-1 transition-all duration-200"
-            >
-              VIP Vito
             </a>
             <a
               href="#gallery"
@@ -108,22 +95,28 @@ export default function App() {
             >
               Reviews
             </a>
+            <a
+              href="#vip-transfer-benefits"
+              className="hover:text-gold border-b border-transparent hover:border-gold pb-1 transition-all duration-200"
+            >
+              VIP Transfer
+            </a>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex shrink-0 items-center gap-2 min-[1180px]:gap-4">
             <a
               href="#platform-booking"
-              className="bg-gold text-white hover:brightness-110 px-8 py-3 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-300 shadow-sm hover:shadow-gold/10 active:scale-95 cursor-pointer"
+              className="inline-flex items-center justify-center bg-gold text-white hover:brightness-110 px-4 sm:px-5 min-[1180px]:px-10 py-3 min-[1180px]:py-3.5 rounded-full text-[10px] min-[1180px]:text-[11px] font-bold uppercase tracking-widest transition-all duration-300 shadow-sm hover:shadow-gold/10 active:scale-95 cursor-pointer"
             >
               Book Your Stay
             </a>
-            <a href="#vip-transfer-booking" className="hidden sm:inline-flex border border-gold bg-white/90 text-charcoal hover:bg-gold hover:text-white px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-300">
+            <a href="#vip-transfer-booking" className="hidden sm:inline-flex items-center justify-center border border-gold bg-white/90 text-charcoal hover:bg-gold hover:text-white px-5 min-[1180px]:px-8 py-3 min-[1180px]:py-3.5 rounded-full text-[10px] min-[1180px]:text-[11px] font-bold uppercase tracking-widest transition-all duration-300">
               Book VIP Transfer
             </a>
             {/* Mobile menu trigger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg bg-white/40 border border-gray-200/40 text-charcoal focus:outline-none"
+              className="min-[920px]:hidden p-2 rounded-lg bg-white/40 border border-gray-200/40 text-charcoal focus:outline-none"
             >
               <SlidersHorizontal className="w-4 h-4 text-charcoal rotate-90" />
             </button>
@@ -137,7 +130,7 @@ export default function App() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="lg:hidden bg-cream/95 backdrop-blur-xl border-b border-gold/15 overflow-hidden"
+              className="min-[920px]:hidden bg-cream/95 backdrop-blur-xl border-b border-gold/15 overflow-hidden"
             >
               <div className="px-6 py-6 space-y-4 flex flex-col text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">
                 <a
@@ -155,32 +148,11 @@ export default function App() {
                   Amenities
                 </a>
                 <a
-                  href="#location"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="hover:text-gold py-1"
-                >
-                  Proximity Map
-                </a>
-                <a
-                  href="#transfer"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="hover:text-gold py-1"
-                >
-                  VIP Vito
-                </a>
-                <a
                   href="#gallery"
                   onClick={() => setMobileMenuOpen(false)}
                   className="hover:text-gold py-1"
                 >
                   Gallery
-                </a>
-                <a
-                  href="#concierge"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="hover:text-gold py-1"
-                >
-                  AI Concierge
                 </a>
                 <a
                   href="#reviews"
@@ -189,6 +161,13 @@ export default function App() {
                 >
                   Reviews
                 </a>
+                <a
+                  href="#vip-transfer-benefits"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="hover:text-gold py-1"
+                >
+                  VIP Transfer
+                </a>
               </div>
             </motion.div>
           )}
@@ -196,7 +175,7 @@ export default function App() {
       </nav>
 
       {/* Hero Welcome Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-charcoal">
+      <section className="relative isolate flex min-h-[100svh] items-center justify-center overflow-x-clip bg-charcoal">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&q=80&w=2000"
@@ -207,12 +186,12 @@ export default function App() {
           <div className="absolute inset-0 hero-overlay"></div>
         </div>
 
-        <div className="relative z-10 text-center px-6 max-w-5xl space-y-6">
+        <div className="relative z-10 flex w-full max-w-5xl flex-col items-center gap-6 px-6 pt-[clamp(8rem,16vh,11rem)] pb-10 text-center sm:gap-7">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] uppercase tracking-[0.3em] font-semibold mb-6 text-white"
+            className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] uppercase tracking-[0.3em] font-semibold text-white"
           >
             Historic Center • Fatih
           </motion.div>
@@ -242,19 +221,15 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col gap-3 items-center justify-center pt-6"
+            className="flex flex-col items-center justify-center gap-3 pt-2"
           >
             <a href="#platform-booking" className="rounded-full bg-gold px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-white transition hover:brightness-110">Book Your Stay</a>
             <a href="#vip-transfer-booking" className="rounded-full border border-white/50 bg-white/10 px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur transition hover:bg-white hover:text-charcoal">Book VIP Transfer</a>
           </motion.div>
-        </div>
-
-        {/* Scroll down indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50 text-center space-y-1 select-none animate-bounce">
-          <span className="text-[10px] uppercase tracking-widest font-semibold block">
-            Explore Stay
-          </span>
-          <ChevronDown className="w-5 h-5 mx-auto" />
+          <div className="mt-1 animate-bounce text-center text-white/50 select-none">
+            <span className="block text-[10px] font-semibold uppercase tracking-widest">Explore Stay</span>
+            <ChevronDown className="mx-auto h-5 w-5" />
+          </div>
         </div>
       </section>
 
@@ -400,136 +375,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* Transit Map / Landmark Visualizer Section */}
-      <section id="location" className="py-28 bg-charcoal text-white">
-        <div className="max-w-7xl mx-auto px-6 space-y-16">
-          <div className="grid lg:grid-cols-2 gap-12 items-end">
-            <div className="space-y-4">
-              <h2 className="text-gold font-serif italic text-xl">
-                Prime Transit Geography
-              </h2>
-              <div className="h-px w-20 bg-gold mb-6"></div>
-              <h3 className="text-3xl sm:text-5xl font-serif font-medium leading-tight">
-                Explore the Magic of Istanbul in Minutes
-              </h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed max-w-xl">
-                Avoid slow bridge traffic. Being located inside the Fatih
-                district center gives you direct walking steps to the
-                **Yusufpaşa T1 Tram** and **Yenikapı Metro Interchange Hub**,
-                making all city areas easily reachable.
-              </p>
-            </div>
-
-            {/* Quick overview of transport times */}
-            <div className="grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
-              <div>
-                <p className="text-xs uppercase text-gray-400 font-semibold tracking-wider">
-                  Tram T1 Station
-                </p>
-                <p className="text-2xl font-serif text-gold font-bold mt-1">
-                  2 Mins Walk
-                </p>
-                <p className="text-[9px] text-gray-500">
-                  Fast connection to sights
-                </p>
-              </div>
-              <div>
-                <p className="text-xs uppercase text-gray-400 font-semibold tracking-wider">
-                  Marmaray Hub
-                </p>
-                <p className="text-2xl font-serif text-gold font-bold mt-1">
-                  5 Mins Walk
-                </p>
-                <p className="text-[9px] text-gray-500">
-                  Metro to Asian Side & Taksim
-                </p>
-              </div>
-              <div>
-                <p className="text-xs uppercase text-gray-400 font-semibold tracking-wider">
-                  Yellow Taxis
-                </p>
-                <p className="text-2xl font-serif text-gold font-bold mt-1">
-                  At Doorstep
-                </p>
-                <p className="text-[9px] text-gray-500">
-                  Concierge hailing available
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Map landmark transit simulator component */}
-          <LandmarkTransit />
-        </div>
-      </section>
-
-      {/* VIP Airport transfer Mercedes Vito Section */}
-      <section
-        id="transfer"
-        className="py-28 bg-white border-b border-gray-100"
-      >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="bg-cream rounded-3xl overflow-hidden shadow-sm flex flex-col lg:flex-row border border-gold/10">
-            {/* Description card */}
-            <div className="lg:w-1/2 p-8 md:p-14 flex flex-col justify-center space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-gold font-serif italic text-xl mb-2">
-                  Exclusive Logistics
-                </h2>
-                <div className="h-px w-20 bg-gold mb-6"></div>
-                <h3 className="text-3xl sm:text-4xl font-serif font-medium text-charcoal">
-                  Mercedes-Benz Vito VIP Airport Transfer
-                </h3>
-              </div>
-              <p className="text-gray-600 text-sm leading-relaxed font-light">
-                Forget the stress of street taxi negotiations. We provide
-                private airport pickups from Istanbul Airport (IST) and Sabiha
-                Gökçen Airport (SAW) using our private fleet. Our professional
-                driver greets you at the arrivals gate.
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 text-xs font-semibold text-charcoal">
-                <div className="flex items-center space-x-2.5">
-                  <Star className="w-4 h-4 text-gold" />
-                  <span>Starlit Sky Roof</span>
-                </div>
-                <div className="flex items-center space-x-2.5">
-                  <Tv className="w-4 h-4 text-gold" />
-                  <span>TV & Music Systems</span>
-                </div>
-                <div className="flex items-center space-x-2.5">
-                  <Coffee className="w-4 h-4 text-gold" />
-                  <span>Chilled Soft Drinks</span>
-                </div>
-                <div className="flex items-center space-x-2.5">
-                  <Car className="w-4 h-4 text-gold" />
-                  <span>Luggage Assistance</span>
-                </div>
-              </div>
-
-              <div className="pt-4 flex flex-col sm:flex-row items-baseline gap-4">
-                <a
-                  href="https://wa.me/905312980035"
-                  className="bg-charcoal hover:bg-gold text-white text-xs font-bold px-8 py-3.5 rounded-full transition shadow-md uppercase tracking-wider cursor-pointer"
-                >
-                  Inquire pricing via WhatsApp
-                </a>
-              </div>
-            </div>
-
-            {/* Side photo with JSX referrerPolicy="no-referrer" */}
-            <div className="lg:w-1/2 relative min-h-[300px] lg:min-h-[450px]">
-              <img
-                src="/images/vip/vip-interior-1.jpeg"
-                alt="VIP Mercedes-Benz Vito Luxury Lounge Cabin"
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Photo Gallery Section */}
       <section id="gallery" className="py-28 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 space-y-16">
@@ -641,6 +486,34 @@ export default function App() {
         </div>
       </section>
 
+      <section id="vip-transfer-benefits" className="py-28 bg-white border-b border-gray-100 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="bg-cream rounded-3xl overflow-hidden shadow-sm border border-gold/10 p-8 md:p-14">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <h2 className="text-gold font-serif italic text-xl mb-2">Why Book a VIP Transfer?</h2>
+              <div className="h-px w-20 bg-gold mx-auto mb-6"></div>
+              <h3 className="text-3xl sm:text-4xl font-serif font-medium text-charcoal">A calmer arrival in Istanbul</h3>
+            </div>
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {[
+                ["Stay Together", "For groups, avoid splitting into two or three city taxis. Travel together from the airport to your accommodation and enjoy the journey with your family or friends from beginning to end."],
+                ["A Trusted Transfer", "Book through a transfer provider recommended by your accommodation host, rather than searching for an unfamiliar driver after landing."],
+                ["Meet & Greet", "Be welcomed at the airport and guided to your private driver, making the arrival process much easier after a long flight."],
+                ["Start Exploring Sooner", "Relax with complimentary soft drinks in the vehicle, leave the airport behind, and arrive at your accommodation refreshed and ready to explore Istanbul."],
+                ["Easier With Luggage, Children & Families", "Avoid dealing with trains, station changes, stairs, crowds and luggage on public transportation. Istanbul has an extensive rail network, but transfers between lines are common and can be inconvenient for larger groups, families, young children and travelers with multiple suitcases."],
+                ["Comfort From Door to Door", "Enjoy a private, direct journey instead of navigating unfamiliar transportation immediately after arriving in Istanbul."],
+                ["More Predictable Arrival", "Know your route, vehicle and estimated transfer price in advance instead of figuring everything out after landing."],
+              ].map(([title, copy]) => (
+                <article key={title} className="rounded-2xl border border-gold/10 bg-white p-5">
+                  <h4 className="font-serif text-lg text-charcoal">{title}</h4>
+                  <p className="mt-2 text-xs leading-relaxed font-light text-gray-600">{copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* --- SECTION: TRUSTED PLATFORMS --- */}
       <section id="platform-booking" className="py-24 bg-[#1A1A1A] text-white relative overflow-hidden scroll-mt-20">
         {/* Dekoratif Compass/Pusula İkonu */}
@@ -703,6 +576,30 @@ export default function App() {
                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
               <span>Find On VRBO</span>
+            </a>
+
+            <a
+              href="https://www.agoda.com/4br-apt-in-old-city-terrace-hot-tub-ac-wifi/hotel/istanbul-tr.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 bg-[#D91A5B] hover:bg-[#BE124C] text-white px-8 py-4 rounded-full text-sm font-bold tracking-wide uppercase transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 active:scale-95"
+            >
+              <img
+                src="/images/logos/Agoda.svg"
+                alt="Agoda"
+                className="w-5 h-5 brightness-0 invert"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+              <span>Find on Agoda</span>
+            </a>
+
+            <a
+              href="https://wa.me/905312980035"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white px-8 py-4 rounded-full text-sm font-bold tracking-wide uppercase transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 active:scale-95"
+            >
+              <span>Contact us on WhatsApp</span>
             </a>
           </div>
 

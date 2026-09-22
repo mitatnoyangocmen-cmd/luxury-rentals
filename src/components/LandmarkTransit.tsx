@@ -126,7 +126,7 @@ export default function LandmarkTransit() {
                 { value: 'public', label: 'T1 Tram', icon: <Train className="w-4 h-4" /> },
                 { value: 'walk', label: 'Walk', icon: <Footprints className="w-4 h-4" /> },
                 { value: 'taxi', label: 'Taxi', icon: <Clock className="w-4 h-4" /> },
-                { value: 'vip', label: 'VIP Vito', icon: <Sparkles className="w-4 h-4" /> }
+                { value: 'vip', label: 'VIP Transfer', icon: <Sparkles className="w-4 h-4" /> }
               ].map(m => (
                 <button
                   key={m.value}

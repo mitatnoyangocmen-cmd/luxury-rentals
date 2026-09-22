@@ -39,7 +39,8 @@ export default function ReviewsSection() {
       text,
       country,
       date: 'July 2026',
-      avatar: author.split(' ').map(n => n[0]).join('').toUpperCase()
+      avatar: author.split(' ').map(n => n[0]).join('').toUpperCase(),
+      platform: 'Airbnb'
     };
 
     setReviews(prev => [newReview, ...prev]);
